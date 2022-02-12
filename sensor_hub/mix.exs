@@ -14,6 +14,7 @@ defmodule SensorHub.MixProject do
       start_permanent: Mix.env() == :prod,
       build_embedded: true,
       deps: deps(),
+      aliases: aliases(),
       releases: [{@app, release()}],
       preferred_cli_target: [run: :host, test: :host]
     ]
@@ -40,6 +41,10 @@ defmodule SensorHub.MixProject do
       {:nerves_runtime, "~> 0.11.3", targets: @all_targets},
       {:nerves_pack, "~> 0.6.0", targets: @all_targets},
       {:nerves_time_zones, "~> 0.1.0", targets: @all_targets},
+      {:circuits_i2c, "~> 1.0", targets: @all_targets, override: true},
+      {:bh1750, "~> 0.2.0"},
+      {:bmp280, "~> 0.2.11"},
+      {:sgp30, "~> 0.2.0"},
 
       # Dependencies for specific targets
       # NOTE: It's generally low risk and recommended to follow minor version
@@ -54,7 +59,9 @@ defmodule SensorHub.MixProject do
       {:nerves_system_rpi4, "~> 1.17", runtime: false, targets: :rpi4},
       {:nerves_system_bbb, "~> 2.12", runtime: false, targets: :bbb},
       {:nerves_system_osd32mp1, "~> 0.8", runtime: false, targets: :osd32mp1},
-      {:nerves_system_x86_64, "~> 1.17", runtime: false, targets: :x86_64}
+      {:nerves_system_x86_64, "~> 1.17", runtime: false, targets: :x86_64},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -67,6 +74,15 @@ defmodule SensorHub.MixProject do
       include_erts: &Nerves.Release.erts/0,
       steps: [&Nerves.Release.init/1, :assemble],
       strip_beams: Mix.env() == :prod or [keep: ["Docs"]]
+    ]
+  end
+
+  # Aliases are shortcuts or tasks specific to the current project.
+  # See the documentation for `Mix` for more info on aliases.
+  defp aliases do
+    [
+      format: ["format", "credo"],
+      dialyzer: ["format", "dialyzer"]
     ]
   end
 end
