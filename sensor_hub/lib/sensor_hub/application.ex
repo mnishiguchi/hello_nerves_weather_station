@@ -11,31 +11,16 @@ defmodule SensorHub.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: SensorHub.Supervisor]
 
-    children =
-      [
-        # Children for all targets
-        # Starts a worker by calling: SensorHub.Worker.start_link(arg)
-        # {SensorHub.Worker, arg},
-      ] ++ children(target())
-
-    Supervisor.start_link(children, opts)
-  end
-
-  # List all child processes to be supervised
-  def children(:host) do
-    [
-      # Children that only run on the host
-      # Starts a worker by calling: SensorHub.Worker.start_link(arg)
-      # {SensorHub.Worker, arg},
+    children = [
+      {SGP30, []},
+      {BMP280, [name: BMP280]},
+      {BH1750, [name: BH1750]}
     ]
-  end
 
-  def children(_target) do
-    [
-      # Children for all targets except host
-      # Starts a worker by calling: SensorHub.Worker.start_link(arg)
-      # {SensorHub.Worker, arg},
-    ]
+    with {:ok, _} = result <- Supervisor.start_link(children, opts) do
+      BMP280.force_altitude(BMP280, 100)
+      result
+    end
   end
 
   def target() do
