@@ -9,7 +9,7 @@ defmodule SensorHub.MixProject do
     [
       app: @app,
       version: @version,
-      elixir: "~> 1.9",
+      elixir: "~> 1.11",
       archives: [nerves_bootstrap: "~> 1.10"],
       start_permanent: Mix.env() == :prod,
       build_embedded: true,
@@ -33,14 +33,14 @@ defmodule SensorHub.MixProject do
     [
       # Dependencies for all targets
       {:nerves, "~> 1.7.4", runtime: false},
-      {:shoehorn, "~> 0.7.0"},
+      {:shoehorn, "~> 0.9.0"},
       {:ring_logger, "~> 0.8.1"},
       {:toolshed, "~> 0.2.13"},
 
       # Dependencies for all targets except :host
-      {:nerves_runtime, "~> 0.11.3", targets: @all_targets},
-      {:nerves_pack, "~> 0.6.0", targets: @all_targets},
-      {:nerves_time_zones, "~> 0.1.0", targets: @all_targets},
+      {:nerves_runtime, "~> 0.12.0", targets: @all_targets},
+      {:nerves_pack, "~> 0.7.0", targets: @all_targets},
+      {:nerves_time_zones, "~> 0.2.0", targets: @all_targets},
       {:circuits_i2c, "~> 1.0", targets: @all_targets, override: true},
       {:bh1750, "~> 0.2.0"},
       {:bmp280, "~> 0.2.11"},
