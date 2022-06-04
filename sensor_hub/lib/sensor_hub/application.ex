@@ -14,13 +14,17 @@ defmodule SensorHub.Application do
     children = [
       {SGP30, []},
       {BMP280, [name: BMP280]},
-      {BH1750, [name: BH1750]}
+      {BH1750, [name: BH1750]},
+      SensorHub.ChiselFontCache,
+      SensorHub.Display,
+      SensorHub.MeasurementServer
     ]
 
-    with {:ok, _} = result <- Supervisor.start_link(children, opts) do
-      BMP280.force_altitude(BMP280, 100)
-      result
-    end
+    {:ok, _} = result = Supervisor.start_link(children, opts)
+
+    BMP280.force_altitude(BMP280, 100)
+
+    result
   end
 
   def target() do

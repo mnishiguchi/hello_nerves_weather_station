@@ -2,7 +2,7 @@ defmodule SensorHub.MixProject do
   use Mix.Project
 
   @app :sensor_hub
-  @version "0.1.0"
+  @version "0.2.0"
   @all_targets [:rpi, :rpi0, :rpi2, :rpi3, :rpi3a, :rpi4, :bbb, :osd32mp1, :x86_64]
 
   def project do
@@ -45,6 +45,8 @@ defmodule SensorHub.MixProject do
       {:bh1750, "~> 0.2.0"},
       {:bmp280, "~> 0.2.11"},
       {:sgp30, "~> 0.2.0"},
+      {:scenic_driver_oled, "~> 0.1.0"},
+      {:chisel, "~> 0.2.0"},
 
       # Dependencies for specific targets
       # NOTE: It's generally low risk and recommended to follow minor version

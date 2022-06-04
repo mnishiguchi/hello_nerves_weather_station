@@ -37,7 +37,7 @@ defmodule SensorHub.Sensor do
   end
 
   defp fields(SGP30), do: [:co2_eq_ppm, :tvoc_ppb]
-  defp fields(BMP280), do: [:altitude_m, :pressure_pa, :temperature_c]
+  defp fields(BMP280), do: [:humidity_rh, :pressure_pa, :temperature_c]
   defp fields(BH1750), do: [:light_lux]
 
   # Assume the sensors are a singleton process that has already been started.
