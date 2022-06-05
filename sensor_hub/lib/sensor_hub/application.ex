@@ -15,7 +15,7 @@ defmodule SensorHub.Application do
       {SGP30, []},
       {BMP280, [name: BMP280]},
       {BH1750, [name: BH1750]},
-      SensorHub.ChiselFontCache,
+      SensorHub.Font,
       SensorHub.Display,
       SensorHub.MeasurementServer
     ]

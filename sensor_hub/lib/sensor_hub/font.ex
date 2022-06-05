@@ -1,8 +1,15 @@
 defmodule SensorHub.Font do
   @moduledoc false
 
+  use Agent
+
+  def start_link(_opts \\ []) do
+    initial_state = %{}
+    Agent.start_link(fn -> initial_state end, name: __MODULE__)
+  end
+
   @doc """
-  Loads a font from priv/fonts directory and converts it to [Chisel.Font]
+  Loads a font from priv/fonts directory and converts it to [Chisel.Font].
   See [olikraus/u8g2] for bdf fonts.
 
   ## Examples
@@ -18,21 +25,33 @@ defmodule SensorHub.Font do
       raise("font name must end with .bdf")
     end
 
-    SensorHub.ChiselFontCache.get_or_insert_by(bdf_font_name, &build_chisel_font/1)
+    get_or_insert_by(bdf_font_name, &build_chisel_font/1)
+  end
+
+  defp get_or_insert_by(font_name, chisel_font_builder) do
+    if chisel_font = get_by(font_name) do
+      chisel_font
+    else
+      %Chisel.Font{} = chisel_font = chisel_font_builder.(font_name)
+      :ok = save(font_name, chisel_font)
+      chisel_font
+    end
+  end
+
+  defp get_by(font_name) do
+    if chisel_font = Agent.get(__MODULE__, &get_in(&1, [font_name])) do
+      chisel_font
+    end
+  end
+
+  defp save(font_name, %Chisel.Font{} = chisel_font) do
+    Agent.update(__MODULE__, &put_in(&1, [font_name], chisel_font))
   end
 
   defp build_chisel_font(bdf_font_name) do
-    fonts_source_dir = Path.join([:code.priv_dir(:sensor_hub), "fonts"])
-    fonts_destination_dir = Path.join([System.tmp_dir!(), "fonts"])
-    File.mkdir_p(fonts_destination_dir)
-
-    font_data_src = Path.join([fonts_source_dir, bdf_font_name])
-    font_data_file = Path.join([fonts_destination_dir, bdf_font_name])
-
-    raw_font = File.read!(font_data_src)
-    File.write!(font_data_file, raw_font)
-
-    {:ok, %Chisel.Font{} = chisel_font} = Chisel.Font.load(font_data_file)
+    {:ok, %Chisel.Font{} = chisel_font} =
+      Path.join([:code.priv_dir(:sensor_hub), "fonts", bdf_font_name])
+      |> Chisel.Font.load()
 
     chisel_font
   end
