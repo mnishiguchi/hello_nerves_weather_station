@@ -39,45 +39,13 @@ defmodule SensorHub.MeasurementServer do
   end
 
   defp refresh_display(state) do
-    measurement_text = measure() |> measurement_to_string()
-
     SensorHub.Display.clear()
     put_pixel_fun = fn x, y -> SensorHub.Display.put_pixel(x, y, []) end
-    Chisel.Renderer.draw_text(measurement_text, 0, 0, state.chisel_font, put_pixel_fun, [])
+
+    SensorHub.Measurement.new()
+    |> SensorHub.Measurement.text()
+    |> Chisel.Renderer.draw_text(0, 0, state.chisel_font, put_pixel_fun, [])
+
     SensorHub.Display.display()
-  end
-
-  defp measurement_to_string(measurement) when is_map(measurement) do
-    time =
-      NaiveDateTime.local_now()
-      |> NaiveDateTime.to_time()
-      |> Time.truncate(:second)
-      |> to_string()
-
-    [
-      {"time", time},
-      {"temperature", measurement.temperature_c |> :erlang.float_to_binary(decimals: 2)},
-      {"humidity", measurement.humidity_rh |> :erlang.float_to_binary(decimals: 2)},
-      {"co2 eq ppm", measurement.co2_eq_ppm},
-      {"tvoc ppb", measurement.tvoc_ppb},
-      {"light lux", measurement.light_lux |> :erlang.float_to_binary(decimals: 2)}
-    ]
-    |> Enum.map(fn {key, value} ->
-      _row = [
-        key |> to_string() |> String.pad_trailing(12),
-        value |> to_string() |> String.pad_leading(8),
-        '\n'
-      ]
-    end)
-    |> to_string()
-  end
-
-  defp measure do
-    [SensorHub.Sensor.SGP30, SensorHub.Sensor.BMP280, SensorHub.Sensor.BH1750]
-    |> Enum.reduce(%{}, fn sensor_mod, acc_map ->
-      sensor_mod.new()
-      |> SensorHub.Sensor.measure!()
-      |> Enum.into(acc_map)
-    end)
   end
 end
