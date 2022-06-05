@@ -72,12 +72,11 @@ defmodule SensorHub.MeasurementServer do
     |> to_string()
   end
 
-  defp measure(sensor_mods \\ [SGP30, BMP280, BH1750]) do
-    sensor_mods
+  defp measure do
+    [SensorHub.Sensor.SGP30, SensorHub.Sensor.BMP280, SensorHub.Sensor.BH1750]
     |> Enum.reduce(%{}, fn sensor_mod, acc_map ->
-      sensor_mod
-      |> SensorHub.Sensor.new()
-      |> SensorHub.Sensor.measure()
+      sensor_mod.new()
+      |> SensorHub.Sensor.measure!()
       |> Enum.into(acc_map)
     end)
   end
